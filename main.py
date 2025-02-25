@@ -58,6 +58,7 @@ app = FastAPI()
 @app.post("/upload")
 async def upload_markdown(data: MarkdownData):
     filename = data.filename.strip()
+    filename_escaped = filename.encode('unicode_escape').decode('utf-8')
     content = data.content
 
     if not filename or not content:
@@ -86,7 +87,7 @@ async def upload_markdown(data: MarkdownData):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Embedding generation failed: {e}")
         # Create a unique vector ID using the filename and chunk index.
-        vector_id = f"{filename}_{i}"
+        vector_id = f"{filename_escaped}_{i}"
         metadata = {"filename": filename, "chunk_index": i, "text": chunk}
         vectors.append({
             "id": vector_id,
